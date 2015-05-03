@@ -23,7 +23,7 @@ function renderData()
 			return 1 - (now - t.created_at) / limit;
         })
         .attr("r", function(t){
-			return 3;
+			return 4;
         });
 }
 
