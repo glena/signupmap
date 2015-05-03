@@ -3,39 +3,28 @@ function renderData()
 {
 	var circles = svg.selectAll("circle").data(data);
 
-    var timeLimit = new Date();
-    var timeLimit1 = (new Date()).setMinutes(timeLimit.getMinutes() - 20);
-	var timeLimit2 = (new Date()).setMinutes(timeLimit.getMinutes() - 40);
-	var timeLimit3 = (new Date()).setMinutes(timeLimit.getMinutes() - 60);
-	var timeLimit4 = (new Date()).setMinutes(timeLimit.getMinutes() - 80);
-	var timeLimit5 = (new Date()).setMinutes(timeLimit.getMinutes() - 100);
-	var timeLimit6 = (new Date()).setMinutes(timeLimit.getMinutes() - 120);
+	var now = Date.now();
+	var limit = 5 * 60 * 1000
 
 	circles.enter().append("circle")
-        .attr("fill", "rgb(255,140,0)");
+        .attr("fill", function(d){
+			return d.color;
+		});
 
     circles.exit().transition()
         .attr("r", 0)
         .remove();
 
+
     circles
-        .attr("cx", function(d) { return d.position[0]; })
-        .attr("cy", function(d) { return d.position[1]; })
+        .attr("cx", function(d) { return d.projection[0]; })
+        .attr("cy", function(d) { return d.projection[1]; })
         .attr("fill-opacity", function(t){
-            if (t.created_at < timeLimit6) return 0.1;
-			if (t.created_at < timeLimit5) return 0.2;
-			if (t.created_at < timeLimit4) return 0.3;
-			if (t.created_at < timeLimit3) return 0.5;
-			if (t.created_at < timeLimit2) return 0.7;
-			if (t.created_at < timeLimit1) return 0.8;
-			return 0.9;
+			return 1 - (now - t.created_at) / limit;
         })
         .attr("r", function(t){
-			if (t.created_at < timeLimit4) return 5;
-			if (t.created_at < timeLimit2) return 4;
 			return 3;
         });
-
 }
 
 function setTimeZone()
@@ -97,42 +86,26 @@ function setTimeZone()
 	svg.selectAll("circle").moveToFront();
 }
 
-function loadTweets(tweets)
+function loadPoint(point)
 {
-	tweets.forEach(function(tweet){
+	if (!strategies[point.strategy]) {
+		strategies[point.strategy] = {
+			color:colors(lastColorIndex),
+			count:0,
+			name:point.strategy
+		};
+		lastColorIndex++;
+	}
 
-		// tweet.created_at = new Date(tweet.created_at);
+	strategies[point.strategy].count++;
 
-		// if (tweet.geo)
-		// {
-			tweet.position = projection(tweet.geo);
-			data.push(tweet);
-			// renderTweets();
+	point.color = strategies[point.strategy].color
+	point.created_at = Date.now();
 
-			// tweetsCount.html('Last ' + data.length + ' tweets.');
-		// }
-	});
+	point.projection = projection([point.geo.lng, point.geo.lat]);
+	data.push(point);
 	renderData();
-}
-
-function renderTweets()
-{
-	var tweets = tweetsWrapper.selectAll('div.tweet').data(data);
-
-	tweets.exit().remove();
-
-	var divWrapper = tweets.enter().insert("div", ":first-child");
-	divWrapper.classed('tweet', true);
-
-	divWrapper.append('div')
-		.classed('user', true)
-		.html(function(t){return '@'+t.screen_name + ' - ' + t.created_at.toLocaleString();;});
-	divWrapper.append('div')
-		.classed('text', true)
-		.html(function(t){return t.text;});
-	divWrapper.append('a')
-		.attr('href',function(t){return 'https://twitter.com/'+t.screen_name+'/status/'+t.id_str;})
-		.html(function(t){return 'https://twitter.com/'+t.screen_name+'/status/'+t.id_str;});
+	//renderStrategies();
 }
 
 

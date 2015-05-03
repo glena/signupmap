@@ -4,9 +4,7 @@ d3.selection.prototype.moveToFront = function() {
 	});
 };
 
-var tweetsCount = d3.select('#tweetsCount')
-, data = []
-, socket = null
+var data = []
 , realWidth = 0
 , width = null
 , originalWidth = null
@@ -14,9 +12,12 @@ var tweetsCount = d3.select('#tweetsCount')
 , π = Math.PI
 , radians = π / 180
 , degrees = 180 / π
-, tweetsWrapper = d3.select('.tweets')
-, about = d3.select('.about')
-, pusher;
+, pusher = null
+, channel = null;
+
+var colors = d3.scale.category20();
+var strategies = {};
+var lastColorIndex = 0;
 
 var circle = d3.geo.circle().angle(90);
 
@@ -25,7 +26,7 @@ var svg = svgEl.append('g');
 
 function resizeGraph(){
    	realWidth = document.body.clientWidth;
-   	width = realWidth - 400;
+   	width = realWidth;
 	height = width;
 
 	svgEl.attr("width", width).attr("height", height);
@@ -75,24 +76,33 @@ d3.json("world.json", function(error, world) {
 		setTimeZone();
 	}
 
-
-	Pusher.log = function(message) {
-	//console.log(message);
-	};
+	// Pusher.log = function(message) {
+	// 	console.log(message);
+	// };
 
 	pusher = new Pusher('54da1f9bddbf14929983');
-	var channel = pusher.subscribe('world_map');
+	channel = pusher.subscribe('world_map');
 
-	channel.bind('login', function(data) {
-		var geo = data.geo;
-
-		console.log(geo);
-
-		loadTweets(geo);
+	channel.bind('login', function(point) {
+		loadPoint(point);
 	});
+
+	// d3.json("data.json", function(error, points) {
+	// 	points.forEach(function(p){
+	// 		loadPoint(p);
+	// 	});
+	// });
 
 });
 
 d3.select(self.frameElement).style("height", height + "px");
 
-window.onresize = resizeGraph;
+// window.onresize = resizeGraph;
+
+setInterval(function(){
+	var limit = Date.now() - (5 * 60 * 1000)
+
+	data = _.filter(data, function(d){
+		return d.created_at > limit;
+	})
+}, 1000)
