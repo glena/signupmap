@@ -4,7 +4,7 @@ function renderData()
 	var circles = svg.selectAll("circle").data(data);
 
 	var now = Date.now();
-	var limit = 5 * 60 * 1000
+	var limit = eventWindow;
 
 	circles.enter().append("circle")
         .attr("fill", function(d){

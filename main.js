@@ -13,7 +13,8 @@ var data = []
 , radians = π / 180
 , degrees = 180 / π
 , pusher = null
-, channel = null;
+, channel = null
+, eventWindow = 1 * 60 * 1000;
 
 var colors = d3.scale.category20();
 var strategies = {};
@@ -100,7 +101,7 @@ d3.select(self.frameElement).style("height", height + "px");
 // window.onresize = resizeGraph;
 
 setInterval(function(){
-	var limit = Date.now() - (5 * 60 * 1000)
+	var limit = Date.now() - eventWindow;
 
 	data = _.filter(data, function(d){
 		return d.created_at > limit;
