@@ -62,7 +62,7 @@ var lat_tz = d3.range(-180,180,15).map(function (lat){
 d3.json("world.json", function(error, world) {
 	svg.append("path")
 		.classed('world', true)
-		.datum( topojson.feature(world, world.objects.land) )
+		.datum( topojson.feature(world, world.objects.countries) )
 		.attr("d", path);
 
 	var night = svg.append("path")

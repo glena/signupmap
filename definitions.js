@@ -3,8 +3,6 @@ function renderData()
 {
 	var circles = svg.selectAll("circle").data(data);
 
-	var limit = eventWindow;
-
 	circles.enter().append("circle")
 		.attr("cx", function(d) { return d.projection[0]; })
 		.attr("cy", function(d) { return d.projection[1]; })
