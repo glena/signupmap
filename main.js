@@ -102,6 +102,7 @@ d3.select(self.frameElement).style("height", height + "px");
 
 setInterval(function(){
 	var limit = Date.now() - eventWindow;
+	var now = Date.now();
 
 	data = _.filter(data, function(d){
 		return d.created_at > limit;

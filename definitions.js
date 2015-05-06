@@ -3,7 +3,6 @@ function renderData()
 {
 	var circles = svg.selectAll("circle").data(data);
 
-	var now = Date.now();
 	var limit = eventWindow;
 
 	circles.enter().append("circle")
