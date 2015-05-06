@@ -7,6 +7,11 @@ function renderData()
 	var limit = eventWindow;
 
 	circles.enter().append("circle")
+		.attr("cx", function(d) { return d.projection[0]; })
+		.attr("cy", function(d) { return d.projection[1]; })
+        .attr("r", function(t){
+			return 4;
+        })
         .attr("fill", function(d){
 			return d.color;
 		});
@@ -15,16 +20,6 @@ function renderData()
         .attr("r", 0)
         .remove();
 
-
-    circles
-        .attr("cx", function(d) { return d.projection[0]; })
-        .attr("cy", function(d) { return d.projection[1]; })
-        .attr("fill-opacity", function(t){
-			return 1 - (now - t.created_at) / limit;
-        })
-        .attr("r", function(t){
-			return 4;
-        });
 }
 
 function setTimeZone()

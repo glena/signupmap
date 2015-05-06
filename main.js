@@ -106,4 +106,9 @@ setInterval(function(){
 	data = _.filter(data, function(d){
 		return d.created_at > limit;
 	})
-}, 1000)
+
+	svg.selectAll("circle")
+        .attr("fill-opacity", function(t){
+			return 1 - (now - t.created_at) / limit;
+        });
+}, 10000)
